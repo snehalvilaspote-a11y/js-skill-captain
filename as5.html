@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 5 – Tony's Café Billing Fix</title>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #2b2d42, #1a1a2e);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .bill-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 12px;
+      width: 340px;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(255,255,255,0.25);
+    }
+
+    h1 {
+      font-size: 26px;
+      color: #ffcc70;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 18px;
+      margin: 8px 0;
+    }
+
+    .bug {
+      color: #ff4d6d;
+    }
+
+    .fix {
+      color: #4cffb3;
+    }
+
+    .extra {
+      color: #4da6ff;
+    }
+
+    .bonus {
+      margin-top: 15px;
+      font-size: 16px;
+      color: #ffea00;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bill-container">
+    <h1>🧾 Tony's Café Billing System</h1>
+
+    <p class="bug">Buggy Total: ₹<span id="bugTotal"></span></p>
+    <p class="fix">Fixed Total: ₹<span id="fixedTotal"></span></p>
+    <p class="extra">Extra Item Total: ₹<span id="extraTotal"></span></p>
+
+    <p id="bonusText" class="bonus"></p>
+  </div>
+
+<script>
+  // ===============================
+  // STEP 1: Buggy Code
+  // ===============================
+  let itemPrice = "200"; // string
+  let quantity = 50;     // number
+
+  // BUG: string + number = string concatenation
+  let buggyTotal = itemPrice + quantity;
+  document.getElementById("bugTotal").textContent = buggyTotal; // 20050
+
+  // ===============================
+  // STEP 2: Fix Using Type Conversion
+  // ===============================
+  let fixedTotal = Number(itemPrice) + quantity;
+  document.getElementById("fixedTotal").textContent = fixedTotal; // 250
+
+  // ===============================
+  // STEP 3: Additional Calculation (parseFloat)
+  // ===============================
+  let extraItemPrice = "100.75"; // string with decimal
+  let extraQuantity = 2;
+
+  let extraTotal = parseFloat(extraItemPrice) * extraQuantity;
+  document.getElementById("extraTotal").textContent = extraTotal.toFixed(2);
+
+  // ===============================
+  // STEP 4: BONUS – Convert Number to String
+  // ===============================
+  let finalAsString = "Final total (as string): ₹" + String(fixedTotal);
+  document.getElementById("bonusText").textContent = finalAsString;
+</script>
+
+</body>
+</html>
