@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 6 – Tony's Smart Discount System</title>
+
+<style>
+  body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    color: #ffcc70;
+    margin-bottom: 10px;
+  }
+
+  .receipt {
+    background: #222;
+    border: 2px dashed #ffcc70;
+    border-radius: 10px;
+    width: 380px;
+    padding: 25px 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 20px rgba(255,204,112,0.3);
+  }
+
+  .line {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    font-size: 18px;
+  }
+
+  .total {
+    border-top: 1px dashed #ffcc70;
+    margin-top: 12px;
+    padding-top: 10px;
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .msg {
+    text-align: center;
+    margin-bottom: 12px;
+    font-style: italic;
+    color: #ffcc70;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>💳 Tony's Café Discount System</h1>
+<p>Automated discount using if-else, switch & ternary operator</p>
+
+<div class="receipt" id="receipt"></div>
+
+<script>
+  // ===============================
+  // STEP 1: Membership Type
+  // ===============================
+  let customerName = "Sophia";
+  let membership = "Gold"; // Gold, Silver, Bronze, Regular
+  let billAmount = 600;
+  let discount = 0;
+
+  // ===============================
+  // STEP 2: Discount using if-else
+  // ===============================
+  if (membership === "Gold") {
+    discount = 0.20;
+  } else if (membership === "Silver") {
+    discount = 0.10;
+  } else if (membership === "Bronze") {
+    discount = 0.05;
+  } else {
+    discount = 0;
+  }
+
+  // ===============================
+  // STEP 3: Final Amount (if-else)
+  // ===============================
+  let finalAmountIfElse = billAmount - (billAmount * discount);
+
+  // ===============================
+  // STEP 4: Discount using switch
+  // ===============================
+  let discountSwitch;
+
+  switch (membership) {
+    case "Gold":
+      discountSwitch = 0.20;
+      break;
+    case "Silver":
+      discountSwitch = 0.10;
+      break;
+    case "Bronze":
+      discountSwitch = 0.05;
+      break;
+    default:
+      discountSwitch = 0;
+  }
+
+  let finalAmountSwitch = billAmount - (billAmount * discountSwitch);
+
+  // ===============================
+  // STEP 5: Ternary Welcome Message
+  // ===============================
+  let isMember = membership !== "Regular";
+  let message = isMember
+    ? "Welcome back, loyal customer!"
+    : "Sign up to get discounts!";
+
+  // ===============================
+  // Display Output
+  // ===============================
+  document.getElementById("receipt").innerHTML = `
+    <p class="msg">${message}</p>
+
+    <div class="line"><span>Customer:</span><span>${customerName}</span></div>
+    <div class="line"><span>Membership:</span><span>${membership}</span></div>
+    <div class="line"><span>Total Bill:</span><span>₹${billAmount}</span></div>
+
+    <hr style="border:1px dashed #ffcc70; margin:12px 0;">
+
+    <div class="line"><span>Discount (if-else):</span><span>${discount * 100}%</span></div>
+    <div class="line"><span>Final Amount:</span><span>₹${finalAmountIfElse}</span></div>
+
+    <hr style="border:1px dashed #ffcc70; margin:12px 0;">
+
+    <div class="line"><span>Discount (switch):</span><span>${discountSwitch * 100}%</span></div>
+    <div class="total"><span>Final (switch):</span><span>₹${finalAmountSwitch}</span></div>
+  `;
+</script>
+
+</body>
+</html>
