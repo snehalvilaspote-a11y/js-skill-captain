@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Profile Card</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 25px 30px;
+      border-radius: 16px;
+      width: 320px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      transition: all 0.35s ease;
+    }
+
+    /* 🎨 Bonus Hover Effect */
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 40px rgba(118, 75, 162, 0.5);
+    }
+
+    h2 {
+      margin-bottom: 5px;
+      color: #4b2aad;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 20px;
+      background: #4b2aad;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #362080;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="profileCard"></div>
+    <button onclick="addRandomSkill()">Add Random Skill</button>
+  </div>
+
+  <script>
+    /* ==========================
+       Task 1: My Profile Object
+       ========================== */
+    const myProfile = {
+      name: "Snehal Pote",
+      role: "Engineering Student",
+      location: "India",
+      skills: ["JavaScript", "Problem Solving", "Teamwork"]
+    };
+
+    /* ==================================
+       Task 2: Modern Card Function
+       ================================== */
+    const createProfileCard = (profile) => {
+      const { name, role, location, skills } = profile;
+
+      return `
+        <div class="card">
+          <h2>${name}</h2>
+          <p>${role} • ${location}</p>
+          <p><strong>Skills:</strong> ${skills.join(", ")}</p>
+        </div>
+      `;
+    };
+
+    const renderProfile = () => {
+      document.getElementById("profileCard").innerHTML =
+        createProfileCard(myProfile);
+    };
+
+    renderProfile();
+
+    /* ==================================
+       Task 3: Add Random Skill (Spread)
+       ================================== */
+    const allSkills = [
+      "React",
+      "Creativity",
+      "Communication",
+      "Leadership",
+      "Time Management",
+      "Critical Thinking"
+    ];
+
+    const addRandomSkill = () => {
+      const randomSkill =
+        allSkills[Math.floor(Math.random() * allSkills.length)];
+
+      if (!myProfile.skills.includes(randomSkill)) {
+        myProfile.skills = [...myProfile.skills, randomSkill];
+        renderProfile();
+      }
+    };
+  </script>
+
+</body>
+</html>
