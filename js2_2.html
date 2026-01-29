@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 2 – Color Palette Picker</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+      transition: background-color 0.3s ease;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .palette {
+      display: flex;
+      gap: 12px;
+    }
+    button {
+      width: 50px;
+      height: 50px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.1);
+    }
+    #colorCode {
+      margin-top: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎨 Tony’s Color Palette Picker</h1>
+
+  <div class="palette" id="palette">
+    <button style="background-color: #ff6b6b;" data-color="#ff6b6b"></button>
+    <button style="background-color: #1dd3b0;" data-color="#1dd3b0"></button>
+    <button style="background-color: #4dabf7;" data-color="#4dabf7"></button>
+    <button style="background-color: #feca57;" data-color="#feca57"></button>
+  </div>
+
+  <p id="colorCode">Click a color to change the theme!</p>
+
+  <script>
+    // Task 1: Select elements
+    const palette = document.querySelector('#palette');
+    const colorCodeText = document.querySelector('#colorCode');
+
+    // Function to apply color change
+    function applyColor(button) {
+      button.addEventListener('click', () => {
+        const selectedColor = button.getAttribute('data-color');
+
+        // Task 2: Change background color
+        document.body.style.backgroundColor = selectedColor;
+
+        // Task 3: Display HEX code
+        colorCodeText.innerHTML =
+          `Background color: <span style="color:${selectedColor}">${selectedColor}</span>`;
+      });
+    }
+
+    // Apply event to existing buttons
+    const buttons = document.querySelectorAll('.palette button');
+    buttons.forEach(applyColor);
+
+    // 💡 Bonus Challenge: Create a custom color button
+    const newButton = document.createElement('button');
+    newButton.style.backgroundColor = '#9b5de5'; // Purple
+    newButton.setAttribute('data-color', '#9b5de5');
+
+    // Add new button to palette
+    palette.appendChild(newButton);
+
+    // Apply click functionality to new button
+    applyColor(newButton);
+  </script>
+
+</body>
+</html>
