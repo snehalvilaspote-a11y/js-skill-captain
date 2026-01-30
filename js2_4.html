@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 – Like Button with Memory</title>
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 20px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    color: #ffcc70;
+    margin-bottom: 30px;
+  }
+
+  .card {
+    background: #1a1a1a;
+    border-radius: 10px;
+    padding: 25px 30px;
+    margin: 15px;
+    width: 280px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255,204,112,0.4);
+  }
+
+  .card button {
+    background: #ffcc70;
+    border: none;
+    color: #222;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .card button:hover {
+    background: #ffe08a;
+  }
+
+  .likes {
+    font-size: 20px;
+    margin: 10px 0;
+  }
+
+  #resetAll {
+    background: #e74c3c;
+    color: #fff;
+    margin-top: 25px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }
+
+  #resetAll:hover {
+    background: #ff6b5b;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>❤️ Tony’s Café Like Buttons</h1>
+
+<div class="card">
+  <h2>Latte</h2>
+  <p class="likes">Likes: <span id="latteLikes">0</span></p>
+  <button id="latteBtn">Like ☕</button>
+</div>
+
+<div class="card">
+  <h2>Cappuccino</h2>
+  <p class="likes">Likes: <span id="cappuccinoLikes">0</span></p>
+  <button id="cappuccinoBtn">Like ☕</button>
+</div>
+
+<div class="card">
+  <h2>Espresso</h2>
+  <p class="likes">Likes: <span id="espressoLikes">0</span></p>
+  <button id="espressoBtn">Like ☕</button>
+</div>
+
+<button id="resetAll">Reset All ❤️‍🔥</button>
+
+<script>
+  // ===============================
+  // TASK 1: Function returning function (Closure)
+  // ===============================
+  function createLikeCounter() {
+    let count = 0;   // private variable
+
+    return function () {
+      count++;
+      return count;
+    };
+  }
+
+  // ===============================
+  // TASK 2 & 3: Independent counters
+  // ===============================
+  let latteCounter = createLikeCounter();
+  let cappuccinoCounter = createLikeCounter();
+  let espressoCounter = createLikeCounter();
+
+  document.getElementById("latteBtn").addEventListener("click", () => {
+    document.getElementById("latteLikes").textContent = latteCounter();
+  });
+
+  document.getElementById("cappuccinoBtn").addEventListener("click", () => {
+    document.getElementById("cappuccinoLikes").textContent = cappuccinoCounter();
+  });
+
+  document.getElementById("espressoBtn").addEventListener("click", () => {
+    document.getElementById("espressoLikes").textContent = espressoCounter();
+  });
+
+  // ===============================
+  // BONUS: Reset All (re-create closures)
+  // ===============================
+  document.getElementById("resetAll").addEventListener("click", () => {
+    latteCounter = createLikeCounter();
+    cappuccinoCounter = createLikeCounter();
+    espressoCounter = createLikeCounter();
+
+    document.getElementById("latteLikes").textContent = 0;
+    document.getElementById("cappuccinoLikes").textContent = 0;
+    document.getElementById("espressoLikes").textContent = 0;
+  });
+</script>
+
+</body>
+</html>
