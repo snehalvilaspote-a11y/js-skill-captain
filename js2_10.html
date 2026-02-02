@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 10 – GitHub Profile Viewer</title>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 300px;
+      margin-top: 15px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    img {
+      width: 100px;
+      border-radius: 50%;
+    }
+
+    input {
+      padding: 8px;
+      margin-bottom: 10px;
+      width: 200px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #24292e;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🔍 GitHub Profile Viewer</h2>
+
+  <input id="username" type="text" placeholder="Enter GitHub username" />
+  <button id="fetchBtn">Fetch Profile</button>
+
+  <div class="card" id="profile"></div>
+
+  <script>
+    const fetchBtn = document.getElementById('fetchBtn');
+    const profileDiv = document.getElementById('profile');
+
+    fetchBtn.addEventListener('click', () => {
+      const username = document.getElementById('username').value;
+
+      if (!username) {
+        alert('Please enter a username!');
+        return;
+      }
+
+      profileDiv.classList.remove('show');
+      profileDiv.innerHTML = `<p>Fetching profile… ⏳</p>`;
+
+      fetch(`https://api.github.com/users/${username}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('User not found');
+          }
+          return response.json();
+        })
+        .then(data => {
+          profileDiv.innerHTML = `
+            <img src="${data.avatar_url}" alt="Avatar" />
+            <h3>${data.name || 'No Name Available'}</h3>
+            <p>${data.bio || 'No bio available'}</p>
+            <p>📍 ${data.location || 'Location not shared'}</p>
+            <p>📦 Repos: ${data.public_repos}</p>
+            <p>👥 Followers: ${data.followers}</p>
+          `;
+          profileDiv.classList.add('show');
+        })
+        .catch(() => {
+          profileDiv.innerHTML = `
+            <p style="color:red;">❌ User not found. Please try again!</p>
+          `;
+          profileDiv.classList.add('show');
+        });
+    });
+  </script>
+
+</body>
+</html>
