@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up Form Validation</title>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #b3e5fc, #e0f7fa);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: #fff;
+      padding: 2rem 2.5rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 350px;
+    }
+
+    h2 {
+      color: #00695c;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.8rem 2.5rem 0.8rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    input.valid {
+      border-color: #2ecc71;
+      background-color: #f0fff4;
+    }
+
+    input.invalid {
+      border-color: #e74c3c;
+      background-color: #fff5f5;
+    }
+
+    .icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      display: none;
+    }
+
+    .icon.success {
+      color: #2ecc71;
+    }
+
+    .icon.error {
+      color: #e74c3c;
+    }
+
+    input.valid ~ .icon.success {
+      display: inline;
+    }
+
+    input.invalid ~ .icon.error {
+      display: inline;
+    }
+
+    button {
+      width: 100%;
+      background: #00695c;
+      color: #fff;
+      border: none;
+      padding: 0.9rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover {
+      background: #004d40;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Sign Up ☕</h2>
+
+    <form id="signupForm">
+      <div class="form-group">
+        <input type="text" id="name" placeholder="Name" />
+        <span class="icon success">✅</span>
+        <span class="icon error">❌</span>
+      </div>
+
+      <div class="form-group">
+        <input type="email" id="email" placeholder="Email" />
+        <span class="icon success">✅</span>
+        <span class="icon error">❌</span>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="password" placeholder="Password" />
+        <span class="icon success">✅</span>
+        <span class="icon error">❌</span>
+      </div>
+
+      <button type="submit">Create Account</button>
+    </form>
+  </div>
+
+  <script>
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const form = document.getElementById("signupForm");
+
+    const nameRegex = /^[A-Za-z ]{3,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^.{6,}$/;
+
+    function validateInput(input, regex) {
+      if (regex.test(input.value.trim())) {
+        input.classList.add("valid");
+        input.classList.remove("invalid");
+        return true;
+      } else {
+        input.classList.add("invalid");
+        input.classList.remove("valid");
+        return false;
+      }
+    }
+
+    nameInput.addEventListener("input", () => validateInput(nameInput, nameRegex));
+    emailInput.addEventListener("input", () => validateInput(emailInput, emailRegex));
+    passwordInput.addEventListener("input", () => validateInput(passwordInput, passwordRegex));
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const isNameValid = validateInput(nameInput, nameRegex);
+      const isEmailValid = validateInput(emailInput, emailRegex);
+      const isPasswordValid = validateInput(passwordInput, passwordRegex);
+
+      if (isNameValid && isEmailValid && isPasswordValid) {
+        alert("✅ Account created successfully!");
+        form.reset();
+        document.querySelectorAll("input").forEach(input => {
+          input.classList.remove("valid", "invalid");
+        });
+      } else {
+        alert("❌ Please fix the errors before submitting.");
+      }
+    });
+  </script>
+</body>
+</html>
