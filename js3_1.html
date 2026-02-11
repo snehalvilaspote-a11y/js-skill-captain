@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Element Finder Tool</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f4f6f9;
+  }
+
+  .finder {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+
+  input {
+    padding: 8px;
+    width: 250px;
+  }
+
+  button {
+    padding: 8px 12px;
+    margin-left: 5px;
+    cursor: pointer;
+  }
+
+  .info {
+    margin-top: 10px;
+    padding: 10px;
+    background: #e3f2fd;
+    border-radius: 5px;
+  }
+
+  .container {
+    padding: 20px;
+    margin: 10px 0;
+    background: #ffffff;
+    border: 1px solid #ddd;
+  }
+
+  .special {
+    color: red;
+    font-weight: bold;
+  }
+
+</style>
+</head>
+
+<body>
+
+<div class="finder">
+  <h2>🔍 Element Finder Tool</h2>
+  <input type="text" id="selectorInput" placeholder="Enter CSS selector (e.g. .special, div, #id)">
+  <button id="highlightBtn">Highlight</button>
+  <div class="info" id="infoBox">Click a highlighted element to see details.</div>
+</div>
+
+<div class="container">
+  <p>This is a paragraph.</p>
+  <p class="special">This is a special paragraph.</p>
+  <button>Normal Button</button>
+</div>
+
+<div class="container special">
+  <h3>Special Container</h3>
+  <p>Another paragraph inside special container.</p>
+</div>
+
+<script>
+
+// Step 1: Select important elements
+const input = document.querySelector("#selectorInput");
+const highlightBtn = document.querySelector("#highlightBtn");
+const allElements = document.querySelectorAll("*");
+const infoBox = document.querySelector("#infoBox");
+
+// Function to clear old highlights
+function clearHighlights() {
+  allElements.forEach(el => el.style.outline = "none");
+}
+
+// Function to highlight elements
+function highlightElements() {
+  clearHighlights();
+  
+  let selector = input.value.trim();
+  
+  if (!selector) return;
+
+  try {
+    let matches = document.querySelectorAll(selector);
+
+    matches.forEach(el => {
+      el.style.outline = "2px solid #ff9800";
+
+      // Add click event to each highlighted element
+      el.onclick = function(e) {
+        e.stopPropagation();
+
+        let nearestContainer = el.closest(".container");
+        let isSpecial = el.matches(".special");
+
+        infoBox.innerHTML = `
+          <strong>Clicked Element:</strong> ${el.tagName}<br>
+          <strong>Nearest .container:</strong> ${nearestContainer ? nearestContainer.tagName : "None"}<br>
+          <strong>Matches .special?</strong> ${isSpecial ? "Yes ✅" : "No ❌"}
+        `;
+      };
+    });
+
+  } catch (error) {
+    infoBox.innerHTML = "❌ Invalid CSS Selector!";
+  }
+}
+
+// Task 2: Button click
+highlightBtn.addEventListener("click", highlightElements);
+
+// Bonus: Live Finder (real-time)
+input.addEventListener("input", highlightElements);
+
+</script>
+
+</body>
+</html>
