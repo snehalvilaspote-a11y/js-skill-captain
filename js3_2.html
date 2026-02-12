@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOM Performance Comparison</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 20px;
+  }
+
+  h2 {
+    margin-bottom: 10px;
+  }
+
+  button {
+    padding: 8px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  input {
+    padding: 6px;
+    width: 80px;
+    margin-left: 10px;
+  }
+
+  #cardContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .card {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  #resultBox {
+    margin-top: 20px;
+    padding: 15px;
+    background: #222;
+    color: #00ff88;
+    border-radius: 8px;
+    font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<h2>Generate Product Cards – DOM Performance Test</h2>
+
+<label>
+  Number of Cards:
+  <input type="number" id="cardCount" value="100">
+</label>
+
+<br><br>
+
+<button onclick="generateInnerHTML()">innerHTML</button>
+<button onclick="generateCreateElement()">createElement()</button>
+<button onclick="generateFragment()">DocumentFragment</button>
+<button onclick="generateInsertAdjacent()">insertAdjacentHTML</button>
+<button onclick="generateTemplate()">Template Clone</button>
+
+<div id="cardContainer"></div>
+
+<div id="resultBox">
+  Performance results will appear here...
+</div>
+
+<!-- Template -->
+<template id="cardTemplate">
+  <div class="card">
+    <h4>Product</h4>
+    <p>Price: ₹100</p>
+  </div>
+</template>
+
+<script>
+
+const container = document.getElementById("cardContainer");
+const resultBox = document.getElementById("resultBox");
+
+function clearContainer() {
+  container.innerHTML = "";
+}
+
+function getCardCount() {
+  return parseInt(document.getElementById("cardCount").value);
+}
+
+function showResult(method, time) {
+  resultBox.innerHTML += `<div>${method}: ${time} ms</div>`;
+}
+
+/* =========================
+   1️⃣ innerHTML Method
+========================= */
+function generateInnerHTML() {
+  clearContainer();
+  resultBox.innerHTML = "";
+
+  const count = getCardCount();
+  const start = performance.now();
+
+  let cards = "";
+  for (let i = 1; i <= count; i++) {
+    cards += `
+      <div class="card">
+        <h4>Product ${i}</h4>
+        <p>Price: ₹${i * 10}</p>
+      </div>`;
+  }
+
+  container.innerHTML = cards;
+
+  const end = performance.now();
+  showResult("innerHTML", (end - start).toFixed(2));
+}
+
+/* =========================
+   2️⃣ createElement Method
+========================= */
+function generateCreateElement() {
+  clearContainer();
+  resultBox.innerHTML = "";
+
+  const count = getCardCount();
+  const start = performance.now();
+
+  for (let i = 1; i <= count; i++) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const title = document.createElement("h4");
+    title.textContent = `Product ${i}`;
+
+    const price = document.createElement("p");
+    price.textContent = `Price: ₹${i * 10}`;
+
+    card.appendChild(title);
+    card.appendChild(price);
+    container.appendChild(card);
+  }
+
+  const end = performance.now();
+  showResult("createElement()", (end - start).toFixed(2));
+}
+
+/* =========================
+   3️⃣ DocumentFragment
+========================= */
+function generateFragment() {
+  clearContainer();
+  resultBox.innerHTML = "";
+
+  const count = getCardCount();
+  const start = performance.now();
+
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 1; i <= count; i++) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <h4>Product ${i}</h4>
+      <p>Price: ₹${i * 10}</p>
+    `;
+
+    fragment.appendChild(card);
+  }
+
+  container.appendChild(fragment);
+
+  const end = performance.now();
+  showResult("DocumentFragment", (end - start).toFixed(2));
+}
+
+/* =========================
+   4️⃣ insertAdjacentHTML
+========================= */
+function generateInsertAdjacent() {
+  clearContainer();
+  resultBox.innerHTML = "";
+
+  const count = getCardCount();
+  const start = performance.now();
+
+  for (let i = 1; i <= count; i++) {
+    container.insertAdjacentHTML(
+      "beforeend",
+      `<div class="card">
+        <h4>Product ${i}</h4>
+        <p>Price: ₹${i * 10}</p>
+      </div>`
+    );
+  }
+
+  const end = performance.now();
+  showResult("insertAdjacentHTML()", (end - start).toFixed(2));
+}
+
+/* =========================
+   5️⃣ Template Clone
+========================= */
+function generateTemplate() {
+  clearContainer();
+  resultBox.innerHTML = "";
+
+  const count = getCardCount();
+  const template = document.getElementById("cardTemplate");
+
+  const start = performance.now();
+
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 1; i <= count; i++) {
+    const clone = template.content.cloneNode(true);
+    clone.querySelector("h4").textContent = `Product ${i}`;
+    clone.querySelector("p").textContent = `Price: ₹${i * 10}`;
+    fragment.appendChild(clone);
+  }
+
+  container.appendChild(fragment);
+
+  const end = performance.now();
+  showResult("Template Clone", (end - start).toFixed(2));
+}
+
+</script>
+
+</body>
+</html>
