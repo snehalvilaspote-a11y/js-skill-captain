@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 3 – JSON Data Explorer</title>
+<style>
+  body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #16213e, #1a1a2e);
+    color: #fff;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  h1 { color: #ffcc70; margin-bottom: 20px; }
+  .data-box {
+    background: #222;
+    border: 2px dashed #ffcc70;
+    border-radius: 10px;
+    padding: 20px;
+    width: 400px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .data-line {
+    margin: 6px 0;
+    color: #ffcc70;
+  }
+  pre {
+    text-align: left;
+    background: #111;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+    color: #0f0;
+  }
+  button {
+    background: #ffcc70;
+    color: #222;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>📦 Tony’s JSON Data Explorer</h1>
+<p>Explore complex nested data safely using optional chaining!</p>
+
+<div class="data-box" id="dataBox">
+  <!-- Data will appear here -->
+</div>
+
+<button id="toggleView">Show JSON</button>
+
+<script>
+  // ===============================
+  // TASK 1 – Sample JSON Data
+  // ===============================
+  const order = {
+    customer: {
+      name: "Peter Parker",
+      contact: {
+        email: "peter@dailybugle.com",
+        phone: "9876543210"
+      }
+    },
+    items: [
+      { name: "Latte", price: 180, toppings: ["Cinnamon", "Cream"] },
+      { name: "Espresso", price: 150 }
+    ],
+    delivery: {
+      address: {
+        street: "20 Ingram Street",
+        city: "Queens",
+        zip: "11001"
+      },
+      time: "10:30 AM"
+    }
+  };
+
+  const dataBox = document.getElementById("dataBox");
+  const toggleBtn = document.getElementById("toggleView");
+  let showRaw = false;
+
+  // ===============================
+  // TASK 2 – Access Nested Data Safely
+  // ===============================
+  const customerName = order.customer?.name || "Not Available";
+  const email = order.customer?.contact?.email || "Not Available";
+  const phone = order.customer?.contact?.phone || "Not Available";
+
+  const firstItem = order.items?.[0]?.name || "No Item";
+  const firstPrice = order.items?.[0]?.price || 0;
+  const toppings = order.items?.[0]?.toppings?.join(", ") || "None";
+
+  const street = order.delivery?.address?.street || "Not Available";
+  const city = order.delivery?.address?.city || "Not Available";
+  const deliveryTime = order.delivery?.time || "Not Specified";
+
+  // ===============================
+  // TASK 3 – Display Data Readably
+  // ===============================
+  const renderSummary = () => {
+    dataBox.innerHTML = `
+      <div class="data-line">👤 Customer: <strong>${customerName}</strong></div>
+      <div class="data-line">📧 Email: ${email}</div>
+      <div class="data-line">📞 Phone: ${phone}</div>
+      <div class="data-line">☕ Item: ${firstItem}</div>
+      <div class="data-line">💰 Price: ₹${firstPrice}</div>
+      <div class="data-line">🍫 Toppings: ${toppings}</div>
+      <div class="data-line">🏠 Address: ${street}, ${city}</div>
+      <div class="data-line">⏰ Delivery Time: ${deliveryTime}</div>
+    `;
+  };
+
+  renderSummary();
+
+  // ===============================
+  // BONUS – Toggle Raw JSON View
+  // ===============================
+  toggleBtn.addEventListener("click", () => {
+    showRaw = !showRaw;
+    if (showRaw) {
+      dataBox.innerHTML = `<pre>${JSON.stringify(order, null, 2)}</pre>`;
+      toggleBtn.textContent = "Show Summary";
+    } else {
+      renderSummary();
+      toggleBtn.textContent = "Show JSON";
+    }
+  });
+</script>
+
+</body>
+</html>
