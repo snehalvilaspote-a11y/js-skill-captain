@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping Cart Calculator – Interactive</title>
+
+<style>
+body{
+  font-family:Poppins,sans-serif;
+  background:linear-gradient(135deg,#fdfbfb,#ebedee);
+  padding:30px;
+}
+
+.cart-container{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  max-width:700px;
+  margin:auto;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+}
+
+button{
+  padding:8px 12px;
+  margin:5px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.primary{background:#2563eb;color:white;}
+.danger{background:#ef4444;color:white;}
+.success{background:#16a34a;color:white;}
+
+input{
+  padding:6px;
+  margin:5px;
+}
+
+#total{
+  font-size:20px;
+  font-weight:bold;
+  margin-top:10px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="cart-container">
+
+<h2>🛒 Shopping Cart</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Price</th>
+<th>Quantity</th>
+<th>Subtotal</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="cartBody"></tbody>
+</table>
+
+<h3 id="total">Total: ₹0</h3>
+
+<hr>
+
+<h3>Add Product</h3>
+
+<input id="name" placeholder="Product Name">
+<input id="price" type="number" placeholder="Price">
+<input id="qty" type="number" placeholder="Quantity">
+
+<br>
+
+<button class="primary" onclick="addProduct()">Add Product</button>
+<button class="success" onclick="calculateTotal()">Calculate Total</button>
+
+</div>
+
+<script>
+
+let cart=[
+ {id:1,name:'Phone',price:20000,quantity:1},
+ {id:2,name:'Headphones',price:2000,quantity:2},
+ {id:3,name:'Charger',price:800,quantity:3}
+];
+
+const cartBody=document.getElementById("cartBody");
+const totalDisplay=document.getElementById("total");
+
+
+// Render Cart
+function renderCart(){
+
+cartBody.innerHTML="";
+
+cart.forEach(item=>{
+
+let subtotal=item.price*item.quantity;
+
+cartBody.innerHTML+=`
+<tr>
+
+<td>${item.name}</td>
+
+<td>₹${item.price}</td>
+
+<td>
+<button onclick="changeQty(${item.id},-1)">-</button>
+${item.quantity}
+<button onclick="changeQty(${item.id},1)">+</button>
+</td>
+
+<td>₹${subtotal}</td>
+
+<td>
+<button class="danger" onclick="removeItem(${item.id})">
+Remove
+</button>
+</td>
+
+</tr>
+`;
+
+});
+
+calculateTotal();
+
+}
+
+
+// Calculate Total using reduce()
+function calculateTotal(){
+
+let total=cart.reduce(
+(sum,item)=>sum+item.price*item.quantity,0
+);
+
+totalDisplay.innerText="Total: ₹"+total;
+
+}
+
+
+// Add Product
+function addProduct(){
+
+let name=document.getElementById("name").value;
+let price=parseInt(document.getElementById("price").value);
+let qty=parseInt(document.getElementById("qty").value);
+
+if(!name||!price||!qty){
+
+alert("Enter all fields");
+return;
+
+}
+
+cart.push({
+
+id:Date.now(),
+name:name,
+price:price,
+quantity:qty
+
+});
+
+renderCart();
+
+}
+
+
+// Remove using findIndex()
+function removeItem(id){
+
+let index=cart.findIndex(item=>item.id===id);
+
+cart.splice(index,1);
+
+renderCart();
+
+}
+
+
+// Update Quantity
+function changeQty(id,value){
+
+let item=cart.find(item=>item.id===id);
+
+item.quantity+=value;
+
+if(item.quantity<=0){
+
+removeItem(id);
+
+}else{
+
+renderCart();
+
+}
+
+}
+
+
+// Check Conditions using some() and every()
+function checkConditions(){
+
+let cheap=cart.some(item=>item.price<1000);
+
+let affordable=cart.every(item=>item.price<50000);
+
+console.log("Cheap item:",cheap);
+
+console.log("All affordable:",affordable);
+
+}
+
+
+renderCart();
+
+</script>
+
+</body>
+</html>
