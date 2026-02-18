@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Config Manager Tool</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1f1f1f, #2d2d2d);
+    color: #fff;
+    padding: 30px;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .card {
+    background: #333;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  }
+
+  button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    margin: 10px 5px 0 0;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .merge-btn { background: #4CAF50; color: white; }
+  .partial-btn { background: #ff9800; color: white; }
+
+  pre {
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+</style>
+</head>
+<body>
+
+<h1>⚙ Interactive Config Manager Tool</h1>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Default Config</h3>
+    <pre id="defaultDisplay"></pre>
+  </div>
+
+  <div class="card">
+    <h3>User Config</h3>
+    <pre id="userDisplay"></pre>
+  </div>
+
+  <div class="card">
+    <h3>Merged Config</h3>
+    <pre id="mergedDisplay">Click "Merge Config"</pre>
+  </div>
+
+  <div class="card">
+    <h3>Destructured Output</h3>
+    <pre id="destructuredDisplay">Waiting for merge...</pre>
+  </div>
+
+</div>
+
+<button class="merge-btn" onclick="mergeConfigs()">Merge Config</button>
+<button class="partial-btn" onclick="usePartialConfig()">Partial Config</button>
+
+<script>
+
+// ===== TASK 1: Base Config Setup =====
+
+const defaultConfig = {
+  theme: "dark",
+  version: "1.0.0",
+  aiName: "Jarvis"
+};
+
+let userConfig = {
+  theme: "light",
+  aiName: "Friday"
+};
+
+// Display initial configs
+document.getElementById("defaultDisplay").textContent =
+  JSON.stringify(defaultConfig, null, 2);
+
+document.getElementById("userDisplay").textContent =
+  JSON.stringify(userConfig, null, 2);
+
+
+// ===== TASK 2: Merge Using Spread =====
+
+function mergeConfigs() {
+
+  // Spread merge (user overrides default)
+  const finalConfig = { ...defaultConfig, ...userConfig };
+
+  document.getElementById("mergedDisplay").textContent =
+    JSON.stringify(finalConfig, null, 2);
+
+  // ===== TASK 3: Destructuring with Defaults =====
+  const {
+    theme = "dark",
+    aiName = "AI",
+    version = "1.0"
+  } = finalConfig;
+
+  document.getElementById("destructuredDisplay").textContent =
+`Theme: ${theme}
+AI Name: ${aiName}
+Version: ${version}`;
+}
+
+
+// ===== BONUS: Partial Config Simulation =====
+
+function usePartialConfig() {
+
+  // Simulate incomplete data
+  userConfig = {
+    theme: "neon"
+    // aiName and version missing
+  };
+
+  document.getElementById("userDisplay").textContent =
+    JSON.stringify(userConfig, null, 2);
+
+  document.getElementById("mergedDisplay").textContent =
+    "Click 'Merge Config' to see updated result";
+
+  document.getElementById("destructuredDisplay").textContent =
+    "Waiting for merge...";
+}
+
+</script>
+
+</body>
+</html>

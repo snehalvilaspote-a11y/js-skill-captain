@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clone Tester Tool</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+#cloneBtn { background: #3b82f6; color: white; }
+#mutateOriginal { background: #ef4444; color: white; }
+#mutateCopy { background: #22c55e; color: white; }
+
+#displayArea {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    padding: 15px;
+    border-radius: 10px;
+    background: #1e293b;
+}
+
+.shallow {
+    border: 3px solid red;
+}
+
+.deep {
+    border: 3px solid limegreen;
+}
+
+.original {
+    border: 3px solid #3b82f6;
+}
+
+.title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Clone Tester Tool</h1>
+
+<button id="cloneBtn">Clone</button>
+<button id="mutateOriginal">Mutate Original</button>
+<button id="mutateCopy">Mutate Copy</button>
+
+<div id="displayArea"></div>
+
+<script>
+
+// Base object
+const baseHero = {
+    name: "Iron Man",
+    suit: {
+        color: "red",
+        power: 90
+    }
+};
+
+// Objects storage
+let original = structuredClone(baseHero);
+
+let spreadCopy = null;
+let assignCopy = null;
+let jsonCopy = null;
+let structuredCopy = null;
+
+// Display function
+function display() {
+
+    const area = document.getElementById("displayArea");
+
+    area.innerHTML = `
+    
+    <div class="card original">
+        <div class="title">Original</div>
+        ${format(original)}
+    </div>
+
+    <div class="card shallow">
+        <div class="title">Spread Copy (Shallow)</div>
+        ${spreadCopy ? format(spreadCopy) : "Not created"}
+    </div>
+
+    <div class="card shallow">
+        <div class="title">Object.assign Copy (Shallow)</div>
+        ${assignCopy ? format(assignCopy) : "Not created"}
+    </div>
+
+    <div class="card deep">
+        <div class="title">JSON Copy (Deep)</div>
+        ${jsonCopy ? format(jsonCopy) : "Not created"}
+    </div>
+
+    <div class="card deep">
+        <div class="title">structuredClone Copy (Deep)</div>
+        ${structuredCopy ? format(structuredCopy) : "Not created"}
+    </div>
+
+    `;
+}
+
+// Format object to display
+function format(obj) {
+    return `
+        Name: ${obj.name}<br>
+        Color: ${obj.suit.color}<br>
+        Power: ${obj.suit.power}
+    `;
+}
+
+// Clone button
+document.getElementById("cloneBtn").onclick = () => {
+
+    spreadCopy = {...original};
+
+    assignCopy = Object.assign({}, original);
+
+    jsonCopy = JSON.parse(JSON.stringify(original));
+
+    structuredCopy = structuredClone(original);
+
+    display();
+};
+
+// Mutate original
+document.getElementById("mutateOriginal").onclick = () => {
+
+    original.suit.color = "gold";
+
+    original.suit.power += 10;
+
+    display();
+};
+
+// Mutate copies
+document.getElementById("mutateCopy").onclick = () => {
+
+    if(spreadCopy) {
+        spreadCopy.suit.color = "blue";
+        spreadCopy.suit.power += 5;
+    }
+
+    if(assignCopy) {
+        assignCopy.suit.color = "silver";
+        assignCopy.suit.power += 5;
+    }
+
+    if(jsonCopy) {
+        jsonCopy.suit.color = "black";
+        jsonCopy.suit.power += 5;
+    }
+
+    if(structuredCopy) {
+        structuredCopy.suit.color = "white";
+        structuredCopy.suit.power += 5;
+    }
+
+    display();
+};
+
+// Initial display
+display();
+
+</script>
+
+</body>
+</html>
