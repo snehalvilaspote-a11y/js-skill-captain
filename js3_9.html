@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Day 9 – Pure Function Playground (Complete)</title>
+
+<style>
+
+body {
+  font-family: 'Fira Code', monospace;
+  background: linear-gradient(135deg, #232526, #414345);
+  color: #f5f5f5;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+h1 {
+  color: #00ffc3;
+}
+
+textarea {
+
+  width: 85%;
+  height: 140px;
+  background: #111;
+  color: #0ff;
+  border: 2px solid #00ffc3;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: monospace;
+}
+
+button {
+
+  padding: 10px 15px;
+  margin: 6px;
+  background: #00ffc3;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+pre {
+
+  background: black;
+  color: #00ff00;
+  padding: 15px;
+  border-radius: 8px;
+  width: 85%;
+  margin: 20px auto;
+  text-align: left;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🧠 Pure Function Playground</h1>
+
+<p>
+Test Pure Functions, Side Effects, Immutability, and Declarative Style
+</p>
+
+<textarea id="input">
+
+// Example Pure Function
+function add(a,b){
+  return a+b;
+}
+
+</textarea>
+
+<br>
+
+<button onclick="testFunction()">🧪 Test Function Purity</button>
+
+<button onclick="loadPurityExamples()">📘 Load Purity Examples</button>
+
+<button onclick="runImmutability()">📦 Test Immutability</button>
+
+<button onclick="runDeclarative()">⚡ Test Declarative vs Imperative</button>
+
+<pre id="output"></pre>
+
+<script>
+
+////////////////////////////////////////////////////////////
+// BONUS PURITY CHECKER
+////////////////////////////////////////////////////////////
+
+function checkPurity(fn){
+
+  try{
+
+    const before = JSON.stringify(window);
+
+    const r1 = fn(5,3);
+
+    const r2 = fn(5,3);
+
+    const after = JSON.stringify(window);
+
+    if(r1 !== r2){
+
+      return "❌ Impure: Different outputs (Non-deterministic)";
+    }
+
+    if(before !== after){
+
+      return "⚠️ Impure: Side effects detected (global state changed)";
+    }
+
+    return "✅ Pure Function";
+
+  }
+
+  catch(e){
+
+    return "⚠️ Error: " + e.message;
+  }
+
+}
+
+////////////////////////////////////////////////////////////
+// TEST USER FUNCTION
+////////////////////////////////////////////////////////////
+
+function testFunction(){
+
+  const code = document.getElementById("input").value;
+
+  const output = document.getElementById("output");
+
+  try{
+
+    eval(code);
+
+    const nameMatch = code.match(/function\s+([a-zA-Z0-9_]+)/);
+
+    if(!nameMatch){
+
+      output.textContent = "❌ No function found";
+
+      return;
+    }
+
+    const name = nameMatch[1];
+
+    const fn = window[name];
+
+    if(typeof fn !== "function"){
+
+      output.textContent = "❌ Invalid function";
+
+      return;
+    }
+
+    const result = checkPurity(fn);
+
+    output.textContent =
+
+`Function: ${name}
+
+Purity Result: ${result}
+
+Test Run Output: ${fn(5,3)}`;
+
+  }
+
+  catch(e){
+
+    output.textContent = "Error: " + e.message;
+  }
+
+}
+
+////////////////////////////////////////////////////////////
+// LOAD PURITY EXAMPLES
+////////////////////////////////////////////////////////////
+
+function loadPurityExamples(){
+
+document.getElementById("input").value =
+
+// Pure Function
+`function add(a,b){
+  return a+b;
+}
+
+// Impure Function (Side effect)
+let count=0;
+function increment(){
+  count++;
+  console.log(count);
+  return count;
+}
+
+// Non deterministic
+function randomNumber(){
+  return Math.random();
+}`;
+}
+
+////////////////////////////////////////////////////////////
+// TASK 2: IMMUTABILITY
+////////////////////////////////////////////////////////////
+
+function runImmutability(){
+
+const output = document.getElementById("output");
+
+const arr = [1,2,3];
+
+// Impure
+function addNumberImpure(num){
+
+  arr.push(num);
+
+  return arr;
+}
+
+// Pure
+function addNumberPure(num){
+
+  return [...arr, num];
+}
+
+const impureResult = addNumberImpure(4);
+
+const pureResult = addNumberPure(5);
+
+output.textContent =
+
+`IMMUTABILITY TEST
+
+Original Array after Impure: ${JSON.stringify(arr)}
+
+Impure Function Result: ${JSON.stringify(impureResult)}
+
+Pure Function Result: ${JSON.stringify(pureResult)}
+
+Conclusion:
+Impure modifies original array ❌
+Pure creates new array ✅`;
+
+}
+
+////////////////////////////////////////////////////////////
+// TASK 3: DECLARATIVE VS IMPERATIVE
+////////////////////////////////////////////////////////////
+
+function runDeclarative(){
+
+const output = document.getElementById("output");
+
+const arr = [1,2,3,4];
+
+// Imperative
+function doubleNumbers(arr){
+
+let res = [];
+
+for(let i=0;i<arr.length;i++){
+
+res.push(arr[i]*2);
+
+}
+
+return res;
+}
+
+// Declarative
+function doubleNumbersDeclarative(arr){
+
+return arr.map(x=>x*2);
+}
+
+const imp = doubleNumbers(arr);
+
+const dec = doubleNumbersDeclarative(arr);
+
+output.textContent =
+
+`DECLARATIVE VS IMPERATIVE
+
+Original: ${JSON.stringify(arr)}
+
+Imperative Result: ${JSON.stringify(imp)}
+
+Declarative Result: ${JSON.stringify(dec)}
+
+Conclusion:
+Declarative is cleaner, shorter, and pure ✅`;
+
+}
+
+</script>
+
+</body>
+</html>
