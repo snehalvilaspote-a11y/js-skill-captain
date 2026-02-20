@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 10 – Function Toolkit Playground</title>
+
+<style>
+  body {
+    font-family: 'Fira Code', monospace;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  h1 { color: #ffdb70; }
+
+  button {
+    margin: 8px;
+    padding: 10px 15px;
+    background: #ffdb70;
+    color: #222;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background: #ffd24a;
+  }
+
+  input {
+    padding: 8px;
+    width: 200px;
+    font-size: 16px;
+    border: 2px solid #ffdb70;
+    border-radius: 5px;
+    background: #111;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  pre {
+    background: #000;
+    color: #0f0;
+    padding: 15px;
+    border-radius: 8px;
+    width: 85%;
+    margin: 20px auto;
+    text-align: left;
+    min-height: 120px;
+    overflow-x: auto;
+  }
+
+  .flow-step {
+    margin: 5px 0;
+    animation: fadeIn 0.4s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<h1>⚙️ Tony’s Function Toolkit Playground</h1>
+<p>Explore compose(), pipe(), and partial() — and visualize how data flows through functions.</p>
+
+<input id="inputValue" type="text" placeholder="Enter a number">
+<br>
+
+<button id="runCompose">🚀 Run Compose</button>
+<button id="runPipe">🔄 Run Pipe</button>
+<button id="runPartial">🧩 Run Partial</button>
+
+<pre id="output"></pre>
+
+<script>
+// ==================================
+// Sample Functions
+// ==================================
+const increment = x => x + 1;
+const double = x => x * 2;
+const square = x => x * x;
+const greet = (greeting, name) => `${greeting}, ${name}!`;
+
+// ==================================
+// Higher-Order Functions
+// ==================================
+const compose = (...fns) => x =>
+  fns.reduceRight((v, fn) => fn(v), x);
+
+const pipe = (...fns) => x =>
+  fns.reduce((v, fn) => fn(v), x);
+
+const partial = (fn, ...fixedArgs) =>
+  (...restArgs) => fn(...fixedArgs, ...restArgs);
+
+// ==================================
+// DOM Elements
+// ==================================
+const input = document.getElementById("inputValue");
+const output = document.getElementById("output");
+
+// ==================================
+// Helper: Visual Flow Animation
+// ==================================
+function visualizeFlow(initialValue, fns, direction = "left") {
+  output.innerHTML = "";
+  let current = initialValue;
+
+  const orderedFns = direction === "right"
+    ? [...fns].reverse()
+    : fns;
+
+  const steps = [
+    `Start: ${current}`
+  ];
+
+  orderedFns.forEach(fn => {
+    current = fn(current);
+    steps.push(`→ ${fn.name} → ${current}`);
+  });
+
+  steps.forEach((step, index) => {
+    setTimeout(() => {
+      const div = document.createElement("div");
+      div.className = "flow-step";
+      div.textContent = step;
+      output.appendChild(div);
+    }, index * 500);
+  });
+}
+
+// ==================================
+// Event Listeners
+// ==================================
+document.getElementById("runCompose").addEventListener("click", () => {
+  const val = Number(input.value);
+  if (isNaN(val)) {
+    output.textContent = "Please enter a valid number.";
+    return;
+  }
+
+  const functions = [square, double, increment];
+  const transform = compose(...functions);
+  visualizeFlow(val, functions, "right");
+
+  setTimeout(() => {
+    output.innerHTML += `\n\nFinal Result: ${transform(val)}`;
+  }, functions.length * 500 + 200);
+});
+
+document.getElementById("runPipe").addEventListener("click", () => {
+  const val = Number(input.value);
+  if (isNaN(val)) {
+    output.textContent = "Please enter a valid number.";
+    return;
+  }
+
+  const functions = [increment, double, square];
+  const transform = pipe(...functions);
+  visualizeFlow(val, functions, "left");
+
+  setTimeout(() => {
+    output.innerHTML += `\n\nFinal Result: ${transform(val)}`;
+  }, functions.length * 500 + 200);
+});
+
+document.getElementById("runPartial").addEventListener("click", () => {
+  output.innerHTML = "";
+  const sayHello = partial(greet, "Hello");
+
+  const message = sayHello("Tony");
+
+  const steps = [
+    `Original Function: greet(greeting, name)`,
+    `Partial Applied: greeting = "Hello"`,
+    `Calling sayHello("Tony")`,
+    `Result → ${message}`
+  ];
+
+  steps.forEach((step, index) => {
+    setTimeout(() => {
+      const div = document.createElement("div");
+      div.className = "flow-step";
+      div.textContent = step;
+      output.appendChild(div);
+    }, index * 500);
+  });
+});
+</script>
+
+</body>
+</html>
