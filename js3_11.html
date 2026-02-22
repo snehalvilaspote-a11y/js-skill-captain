@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 11 – Multi-API Dashboard</title>
+
+<style>
+  body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    color: #fff;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    color: #fdbb2d;
+    margin-bottom: 10px;
+  }
+
+  .dashboard {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+
+  .card {
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    border-radius: 10px;
+    width: 220px;
+    transition: 0.3s;
+    border: 2px solid transparent;
+  }
+
+  button {
+    padding: 10px 20px;
+    background: #fdbb2d;
+    color: #222;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  .status {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+
+  #raceResult, #firstSuccess {
+    margin-top: 25px;
+    color: #fdbb2d;
+    font-size: 1.1em;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>🚀 Multi-API Dashboard</h1>
+<p>Fetching multiple APIs in parallel — watch who wins the race!</p>
+
+<button id="reloadBtn">Reload Data</button>
+
+<div class="dashboard">
+  <div class="card"><h3>API 1</h3><div class="status">Waiting...</div></div>
+  <div class="card"><h3>API 2</h3><div class="status">Waiting...</div></div>
+  <div class="card"><h3>API 3</h3><div class="status">Waiting...</div></div>
+</div>
+
+<div id="raceResult"></div>
+<div id="firstSuccess"></div>
+
+<script>
+
+// ===============================
+// TASK 1: Setup APIs
+// ===============================
+const apis = [
+  "https://api.github.com/users/octocat",          
+  "https://api.spacexdata.com/v5/launches/latest", 
+  "https://invalid-api-url-12345.com"              
+];
+
+const cards = document.querySelectorAll(".card");
+const raceResult = document.getElementById("raceResult");
+const firstSuccess = document.getElementById("firstSuccess");
+const reloadBtn = document.getElementById("reloadBtn");
+
+// Utility to update card
+function updateCard(index, message, color) {
+  cards[index].querySelector(".status").textContent = message;
+  cards[index].style.borderColor = color;
+}
+
+// Fetch with proper error handling
+function safeFetch(url) {
+  return fetch(url).then(response => {
+    if (!response.ok) {
+      throw new Error("HTTP error");
+    }
+    return response;
+  });
+}
+
+// ===============================
+// Main Fetch Function
+// ===============================
+function fetchAllAPIs() {
+
+  // Reset UI
+  cards.forEach((card, i) => {
+    updateCard(i, "⏳ Loading...", "#ccc");
+  });
+
+  raceResult.textContent = "";
+  firstSuccess.textContent = "";
+
+  const fetchPromises = apis.map(url => safeFetch(url));
+
+  // ===============================
+  // TASK 2: Promise.allSettled()
+  // ===============================
+  Promise.allSettled(fetchPromises)
+    .then(results => {
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") {
+          updateCard(index, "✅ Success", "#2ecc71");
+        } else {
+          updateCard(index, "❌ Failed", "#e74c3c");
+        }
+      });
+    });
+
+  // ===============================
+  // TASK 3: Promise.any()
+  // ===============================
+  Promise.any(fetchPromises)
+    .then(res => res.json())
+    .then(data => {
+      const name = data.name || data.flight_number || "Unknown API";
+      firstSuccess.textContent = 
+        `🎉 First successful response: ${name}`;
+    })
+    .catch(() => {
+      firstSuccess.textContent = 
+        "😢 No API succeeded";
+    });
+
+  // ===============================
+  // TASK 4: Promise.race()
+  // ===============================
+  Promise.race(fetchPromises)
+    .then(() => {
+      raceResult.textContent = 
+        "🏁 Fastest response received!";
+    })
+    .catch(() => {
+      raceResult.textContent = 
+        "⚡ Fastest failure occurred!";
+    });
+}
+
+// ===============================
+// BONUS: Reload Button
+// ===============================
+reloadBtn.addEventListener("click", fetchAllAPIs);
+
+// Initial load
+fetchAllAPIs();
+
+</script>
+
+</body>
+</html>
