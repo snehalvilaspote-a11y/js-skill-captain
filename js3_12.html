@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kanban Board</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .column {
+      background: #e2e8f0;
+      padding: 15px;
+      width: 300px;
+      border-radius: 8px;
+      min-height: 400px;
+      transition: background 0.3s ease;
+    }
+
+    .column.drag-over {
+      background: #cbd5e1;
+    }
+
+    .column h3 {
+      text-align: center;
+    }
+
+    .task {
+      background: white;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      cursor: grab;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .task:active {
+      transform: scale(1.05);
+      opacity: 0.8;
+    }
+
+    .task small {
+      display: block;
+      color: gray;
+      margin-top: 5px;
+    }
+
+    select, button, input {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      border: none;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Kanban Task Board</h1>
+
+<div class="controls">
+  <input type="text" id="taskTitle" placeholder="Enter task title" />
+  <button id="addTaskBtn">Add Task</button>
+
+  <select id="userFilter">
+    <option value="all">All Users</option>
+  </select>
+</div>
+
+<div class="board">
+
+  <div class="column" data-status="todo">
+    <h3>To Do</h3>
+    <div class="task-list"></div>
+  </div>
+
+  <div class="column" data-status="progress">
+    <h3>In Progress</h3>
+    <div class="task-list"></div>
+  </div>
+
+  <div class="column" data-status="done">
+    <h3>Done</h3>
+    <div class="task-list"></div>
+  </div>
+
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let users = [];
+
+const columns = document.querySelectorAll(".column");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const taskTitleInput = document.getElementById("taskTitle");
+const userFilter = document.getElementById("userFilter");
+
+/* ================= FETCH USERS ================= */
+fetch("https://jsonplaceholder.typicode.com/users")
+  .then(res => res.json())
+  .then(data => {
+    users = data;
+    populateUserFilter();
+    renderTasks();
+  });
+
+function populateUserFilter() {
+  users.forEach(user => {
+    const option = document.createElement("option");
+    option.value = user.name;
+    option.textContent = user.name;
+    userFilter.appendChild(option);
+  });
+}
+
+/* ================= ADD TASK ================= */
+addTaskBtn.addEventListener("click", () => {
+  const title = taskTitleInput.value.trim();
+  if (!title) return;
+
+  const randomUser = users[Math.floor(Math.random() * users.length)];
+
+  const task = {
+    id: Date.now().toString(),
+    title,
+    status: "todo",
+    user: randomUser ? randomUser.name : "Unknown"
+  };
+
+  tasks.push(task);
+  saveTasks();
+  renderTasks();
+  taskTitleInput.value = "";
+});
+
+/* ================= SAVE ================= */
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+/* ================= RENDER ================= */
+function renderTasks() {
+  document.querySelectorAll(".task-list").forEach(list => list.innerHTML = "");
+
+  const selectedUser = userFilter.value;
+
+  const filteredTasks = selectedUser === "all"
+    ? tasks
+    : tasks.filter(task => task.user === selectedUser);
+
+  filteredTasks.forEach(task => {
+    const taskEl = createTaskElement(task);
+    const column = document.querySelector(`.column[data-status="${task.status}"] .task-list`);
+    column.appendChild(taskEl);
+  });
+}
+
+/* ================= CREATE TASK ELEMENT ================= */
+function createTaskElement(task) {
+  const div = document.createElement("div");
+  div.className = "task";
+  div.draggable = true;
+  div.id = task.id;
+
+  div.innerHTML = `
+    <strong>${task.title}</strong>
+    <small>Assigned to: ${task.user}</small>
+  `;
+
+  div.addEventListener("dragstart", e => {
+    e.dataTransfer.setData("id", task.id);
+  });
+
+  return div;
+}
+
+/* ================= DRAG & DROP ================= */
+columns.forEach(column => {
+
+  column.addEventListener("dragover", e => {
+    e.preventDefault();
+    column.classList.add("drag-over");
+  });
+
+  column.addEventListener("dragleave", () => {
+    column.classList.remove("drag-over");
+  });
+
+  column.addEventListener("drop", e => {
+    e.preventDefault();
+    column.classList.remove("drag-over");
+
+    const id = e.dataTransfer.getData("id");
+    moveTask(id, column.dataset.status);
+  });
+});
+
+function moveTask(id, newStatus) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+
+  task.status = newStatus;
+  saveTasks();
+  renderTasks();
+}
+
+/* ================= FILTER ================= */
+userFilter.addEventListener("change", renderTasks);
+
+</script>
+
+</body>
+</html>
