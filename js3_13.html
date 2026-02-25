@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple Form Filler (HTML Version)</title>
+
+  <style>
+    body { font-family: Arial; padding: 30px; }
+    input, textarea, select {
+      display: block;
+      margin-bottom: 10px;
+      padding: 6px;
+      width: 300px;
+    }
+
+    /* Custom right-click menu */
+    #customMenu {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 8px;
+      display: none;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 9999;
+    }
+
+    #customMenu:hover {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Test Form</h2>
+
+<form>
+  <input type="text" name="firstName" placeholder="First Name">
+  <input type="text" name="lastName" placeholder="Last Name">
+  <input type="email" name="email" placeholder="Email">
+  <input type="tel" name="phone" placeholder="Phone">
+  <input type="password" name="password" placeholder="Password">
+  <input type="date" name="dob">
+  <input type="number" name="age" placeholder="Age">
+  <textarea name="message" placeholder="Message"></textarea>
+  <select name="country">
+    <option value="">Select Country</option>
+    <option>USA</option>
+    <option>Canada</option>
+  </select>
+</form>
+
+<!-- Custom Context Menu -->
+<div id="customMenu">Fill Form with Test Data</div>
+
+<script>
+let lastRightClickedElement = null;
+const menu = document.getElementById("customMenu");
+
+// Show custom right-click menu
+document.addEventListener("contextmenu", function(e) {
+  const target = e.target;
+
+  if (target.matches("input, textarea, select")) {
+    e.preventDefault();
+    lastRightClickedElement = target;
+
+    menu.style.top = e.pageY + "px";
+    menu.style.left = e.pageX + "px";
+    menu.style.display = "block";
+  } else {
+    menu.style.display = "none";
+  }
+});
+
+// Hide menu on click elsewhere
+document.addEventListener("click", () => {
+  menu.style.display = "none";
+});
+
+// When clicking menu option
+menu.addEventListener("click", () => {
+  fillAllForms();
+  menu.style.display = "none";
+});
+
+function fillAllForms() {
+  const fields = document.querySelectorAll("input, textarea, select");
+
+  fields.forEach(field => {
+    if (field.disabled || field.readOnly || !isVisible(field)) return;
+
+    const type = (field.type || "").toLowerCase();
+    const name = (field.name || field.id || "").toLowerCase();
+    const placeholder = (field.placeholder || "").toLowerCase();
+    const combined = name + " " + placeholder;
+
+    let value = generateFakeValue(type, combined);
+
+    if (field.tagName.toLowerCase() === "select") {
+      if (field.options.length > 1) {
+        field.selectedIndex = 1;
+      }
+    } else if (type === "checkbox" || type === "radio") {
+      field.checked = true;
+    } else {
+      field.value = value;
+    }
+
+    triggerEvents(field);
+  });
+}
+
+function generateFakeValue(type, text) {
+  if (type === "email" || text.includes("email")) return "test@example.com";
+  if (type === "tel" || text.includes("phone")) return "5551234567";
+  if (type === "password") return "Test@1234";
+  if (type === "number") return "25";
+  if (type === "date") return "1995-05-15";
+
+  if (text.includes("first")) return "John";
+  if (text.includes("last")) return "Doe";
+  if (text.includes("name")) return "John Doe";
+  if (text.includes("address")) return "123 Test Street";
+  if (text.includes("city")) return "New York";
+  if (text.includes("zip") || text.includes("postal")) return "10001";
+  if (text.includes("company")) return "Test Company";
+
+  if (type === "textarea") return "This is test data.";
+
+  return "Test Data";
+}
+
+function triggerEvents(element) {
+  element.dispatchEvent(new Event("input", { bubbles: true }));
+  element.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function isVisible(element) {
+  const style = window.getComputedStyle(element);
+  return (
+    style.display !== "none" &&
+    style.visibility !== "hidden" &&
+    element.offsetParent !== null
+  );
+}
+</script>
+
+</body>
+</html>
